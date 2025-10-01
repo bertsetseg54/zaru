@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 export default function ProductForm({
-  form = {}, // ← default утга
+  form = {},
   setForm = () => {},
   onSubmit = () => {},
   onClose = () => {},

@@ -2,11 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 
 export default function ClickCarousel() {
-  const images = [
-    "https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp",
-    "https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.webp",
-    "https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp",
-  ];
+  const images = ["/reklam1.png", "/reklam2.png"];
 
   const [index, setIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -45,7 +41,9 @@ export default function ClickCarousel() {
     if (diff > 50) setIndex((prev) => Math.max(prev - 1, 0));
     else if (diff < -50)
       setIndex((prev) => Math.min(prev + 1, images.length - 1));
-    setCurrentTranslate(-index * 100);
+    setCurrentTranslate(
+      -((diff > 50 ? index - 1 : diff < -50 ? index + 1 : index) * 100)
+    );
   };
 
   return (
@@ -72,7 +70,7 @@ export default function ClickCarousel() {
             <img
               src={src}
               alt=""
-              className="w-full h-auto object-cover" // 🟢 responsive + дэлгэц дүүргэнэ
+              className="w-full object-cover overflow-hidden h-auto"
             />
           </div>
         ))}
