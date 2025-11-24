@@ -92,11 +92,27 @@ export default function ProductList() {
         <SearchInput
           placeholder="Бүтээгдэхүүн хайх..."
           onSearch={setSearchTerm}
-          className="w-full sm:w-1/2 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm"
+          className="w-full sm:w-1/2 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:rыing-indigo-400 shadow-sm"
         />
       </div>
       {searchTerm.trim() === "" && (
-        <div className="flex justify-center overflow-x-auto scrollbar-hide gap-2 sm:gap-3 p-3 sm:p-4 mb-4 bg-gray-50 rounded-lg">
+        <div
+          className="
+      flex 
+      overflow-x-auto 
+      gap-2 sm:gap-3 
+      bg-gray-50 
+      rounded-lg 
+      whitespace-nowrap 
+      custom-scroll-hide
+      
+      px-0 py-4         /* mobile дээр padding байхгүй */
+
+      sm:p-3            /* tablet */
+      md:justify-center /* desktop дээр төв рүү */
+      md:p-4            /* desktop padding */
+    "
+        >
           {categories.map((cat) => (
             <button
               key={cat}
@@ -112,6 +128,7 @@ export default function ProductList() {
           ))}
         </div>
       )}
+
       {searchTerm.trim() !== "" && (
         <div className="flex w-full justify-center overflow-x-auto scrollbar-hide gap-2 sm:gap-3 p-3 sm:p-4 mb-4 bg-gray-50 rounded-lg">
           {manufacturers

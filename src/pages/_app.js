@@ -6,6 +6,7 @@ import { OrdersProvider } from "../context/OrderContext";
 import { UserProvider } from "../context/UserContext";
 import { ProductsProvider } from "../context/ProductContext";
 import { OrgProvider } from "@/context/OrgContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
@@ -13,22 +14,24 @@ export default function App({ Component, pageProps }) {
   const isNoLayout = noLayoutRouter.includes(router.pathname);
 
   return (
-    <OrgProvider>
-      <ProductsProvider>
-        <UserProvider>
-          <SagsProvider>
-            <OrdersProvider>
-              {isNoLayout ? (
-                <Component {...pageProps} />
-              ) : (
-                <Layout>
+    <ThemeProvider>
+      <OrgProvider>
+        <ProductsProvider>
+          <UserProvider>
+            <SagsProvider>
+              <OrdersProvider>
+                {isNoLayout ? (
                   <Component {...pageProps} />
-                </Layout>
-              )}
-            </OrdersProvider>
-          </SagsProvider>
-        </UserProvider>
-      </ProductsProvider>
-    </OrgProvider>
+                ) : (
+                  <Layout>
+                    <Component {...pageProps} />
+                  </Layout>
+                )}
+              </OrdersProvider>
+            </SagsProvider>
+          </UserProvider>
+        </ProductsProvider>
+      </OrgProvider>
+    </ThemeProvider>
   );
 }

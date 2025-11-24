@@ -1,80 +1,117 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function ClickCarousel() {
-  const images = ["/reklam1.png", "/reklam2.png"];
+  const images = ["/reklam1.png", "/reklam2.png", "/reklam3.png"];
+  const imagesExtended = [...images, ...images];
 
   const [index, setIndex] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [currentTranslate, setCurrentTranslate] = useState(0);
-  const containerRef = useRef(null);
+  const [smooth, setSmooth] = useState(true);
+  const autoSlideRef = useRef(null);
 
+  // Auto slide
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % images.length);
+    startAutoSlide();
+    return stopAutoSlide;
+  }, []);
+
+  const startAutoSlide = () => {
+    stopAutoSlide();
+    autoSlideRef.current = setInterval(() => {
+      nextSlide();
     }, 3000);
-    return () => clearInterval(interval);
-  }, [images.length]);
+  };
 
+  const stopAutoSlide = () => {
+    if (autoSlideRef.current) clearInterval(autoSlideRef.current);
+  };
+
+  // Infinite loop
   useEffect(() => {
-    setCurrentTranslate(-index * 100);
-  }, [index]);
+    if (index === images.length) {
+      setTimeout(() => {
+        setSmooth(false);
+        setIndex(0);
+        setTimeout(() => setSmooth(true), 60);
+      }, 500);
+    }
 
-  const handleStart = (x) => {
-    setIsDragging(true);
-    setStartX(x);
-  };
+    if (index < 0) {
+      setSmooth(false);
+      setIndex(images.length - 1);
+      setTimeout(() => setSmooth(true), 60);
+    }
+  }, [index, images.length]);
 
-  const handleMove = (x) => {
-    if (!isDragging) return;
-    const diff = x - startX;
-    setCurrentTranslate(
-      -index * 100 + (diff / containerRef.current.offsetWidth) * 100
-    );
-  };
-
-  const handleEnd = (x) => {
-    if (!isDragging) return;
-    setIsDragging(false);
-    const diff = x - startX;
-    if (diff > 50) setIndex((prev) => Math.max(prev - 1, 0));
-    else if (diff < -50)
-      setIndex((prev) => Math.min(prev + 1, images.length - 1));
-    setCurrentTranslate(
-      -((diff > 50 ? index - 1 : diff < -50 ? index + 1 : index) * 100)
-    );
-  };
+  const nextSlide = () => setIndex((prev) => prev + 1);
+  const prevSlide = () => setIndex((prev) => prev - 1);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full overflow-hidden cursor-grab select-none"
-      onMouseDown={(e) => handleStart(e.clientX)}
-      onMouseMove={(e) => handleMove(e.clientX)}
-      onMouseUp={(e) => handleEnd(e.clientX)}
-      onMouseLeave={() => isDragging && handleEnd(startX)}
-      onTouchStart={(e) => handleStart(e.touches[0].clientX)}
-      onTouchMove={(e) => handleMove(e.touches[0].clientX)}
-      onTouchEnd={(e) => handleEnd(e.changedTouches[0].clientX)}
-    >
+    <div className="relative w-full overflow-hidden">
+      {/* Slides */}
       <div
-        className="flex transition-transform duration-500"
-        style={{ transform: `translateX(${currentTranslate}%)` }}
+        className={`flex ${smooth ? "transition-transform duration-500" : ""}`}
+        style={{ transform: `translateX(-${index * 100}%)` }}
       >
-        {images.map((src, i) => (
-          <div
-            key={i}
-            className="w-full flex-shrink-0" // 🟢 зөвхөн дэлгэцийн өргөнд таарна
-          >
+        {imagesExtended.map((src, i) => (
+          <div key={i} className="w-full flex-shrink-0">
             <img
               src={src}
+              className="w-full h-auto object-cover aspect-2138/684"
               alt=""
-              className="w-full object-cover overflow-hidden h-auto"
             />
           </div>
         ))}
       </div>
+      {/* LEFT BUTTON */}
+      <button
+        onClick={prevSlide}
+        className="
+    absolute top-1/2 -translate-y-1/2
+    flex items-center justify-center
+    rounded-full border border-white/30 text-white backdrop-blur-md
+    transition-all duration-200
+
+    /* Position */
+    left-2       /* mobile */
+    sm:left-3    /* small tablets */
+    md:left-5    /* desktop */
+
+    /* Size */
+    w-7 h-7 text-sm       /* mobile */
+    sm:w-8 sm:h-8 sm:text-base
+    md:w-10 md:h-10 md:text-lg
+
+    hover:bg-white/20
+  "
+      >
+        ‹
+      </button>
+
+      {/* RIGHT BUTTON */}
+      <button
+        onClick={nextSlide}
+        className="
+    absolute top-1/2 -translate-y-1/2
+    flex items-center justify-center
+    rounded-full border border-white/30 text-white backdrop-blur-md
+    transition-all duration-200
+
+    /* Position */
+    right-2       /* mobile */
+    sm:right-3
+    md:right-5
+
+    /* Size */
+    w-7 h-7 text-sm
+    sm:w-8 sm:h-8 sm:text-base
+    md:w-10 md:h-10 md:text-lg
+
+    hover:bg-white/20
+  "
+      >
+        ›
+      </button>
     </div>
   );
 }
